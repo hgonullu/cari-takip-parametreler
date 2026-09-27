@@ -28,7 +28,9 @@ import urllib.request
 from datetime import date
 
 SERIES = "TP.FG.J0"
-EVDS = "https://evds2.tcmb.gov.tr/service/evds/series={series}&startDate={start}&endDate={end}&type=json"
+# evds2 answers with a redirect to evds3, and a redirect is where a custom
+# header goes missing. Ask evds3 directly.
+EVDS = "https://evds3.tcmb.gov.tr/service/evds/series={series}&startDate={start}&endDate={end}&type=json"
 # A monthly index does not move by this much; anything larger is a bad read.
 MAX_PLAUSIBLE_ANNUAL = 500.0
 
