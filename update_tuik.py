@@ -42,21 +42,47 @@ def fetch_index(key: str, months: int = 30) -> list[tuple[str, float]]:
         start=f"01-01-{start_year}",
         end=today.strftime("%d-%m-%Y"),
     )
-    request = urllib.request.Request(url, headers={"key": key, "User-Agent": "cari-takip-parametreler"})
-    try:
-        with urllib.request.urlopen(request, timeout=30) as response:
-            body = response.read().decode("utf-8", "replace")
-    except urllib.error.HTTPError as error:
-        # The key never appears here: the URL carries no key, it is a header.
-        raise SystemExit(f"EVDS refused the request: HTTP {error.code}. Check that EVDS_API_KEY is the API key from your EVDS profile.")
-    except urllib.error.URLError as error:
-        raise SystemExit(f"Could not reach EVDS: {error.reason}")
+    # EVDS takes the key either as a header or in the query. Which one works
+    # has changed over the years, so try the header first and fall back —
+    # and never print a URL, because the fallback puts the key in it.
+    body = ""
+    for attempt, (request_url, headers) in enumerate(
+        (
+            (url, {"key": key}),
+            (f"{url}&key={key}", {}),
+        )
+    ):
+        request = urllib.request.Request(
+            request_url,
+            headers={"User-Agent": "cari-takip-parametreler", "Accept": "application/json", **headers},
+        )
+        try:
+            with urllib.request.urlopen(request, timeout=30) as response:
+                body = response.read().decode("utf-8", "replace")
+        except urllib.error.HTTPError as error:
+            body = f"HTTP {error.code}"
+            continue
+        except urllib.error.URLError as error:
+            raise SystemExit(f"Could not reach EVDS: {error.reason}")
 
-    try:
-        payload = json.loads(body)
-    except json.JSONDecodeError:
-        raise SystemExit(f"EVDS did not answer with JSON. First 200 characters: {body[:200]!r}")
+        try:
+            return parse_items(json.loads(body), months)
+        except json.JSONDecodeError:
+            if attempt == 0:
+                continue
 
+    # A rejected key is answered with the sign-in page, not with an error.
+    if body.lstrip().startswith("<"):
+        raise SystemExit(
+            "EVDS answered with its web page instead of data, which is what it does when the key "
+            "is not accepted. Check the EVDS_API_KEY secret: it must be the API key from your EVDS "
+            "profile, pasted whole and with no spaces around it."
+        )
+    raise SystemExit(f"EVDS did not answer with JSON. It said: {body[:200]!r}")
+
+
+def parse_items(payload: dict, months: int) -> list[tuple[str, float]]:
+    """The index values out of an EVDS answer, oldest first."""
     items = payload.get("items")
     if not items:
         raise SystemExit(f"EVDS returned no data. Keys in the response: {sorted(payload)}")
