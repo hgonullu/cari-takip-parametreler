@@ -11,8 +11,12 @@ Dosyada kişisel hiçbir veri yok, sadece kamuya açık rakamlar.
 Uygulamanın okuduğu adres:
 
 ```
-https://raw.githubusercontent.com/hgonullu/cari-takip-parametreler/main/params.json
+https://api.github.com/repos/hgonullu/cari-takip-parametreler/contents/params.json
 ```
+
+(GitHub'ın `raw.githubusercontent.com` adresi dosyayı beş dakika önbellekte
+tutuyor ve bunu aşmanın yolu yok; API adresi bir dakika tutuyor. Bu yüzden
+API adresi kullanılıyor.)
 
 ## Dosyada neler var
 
