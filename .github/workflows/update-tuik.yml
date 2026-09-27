@@ -1,0 +1,33 @@
+# Writes TÜİK's inflation into params.json on the 4th of every month, the day
+# after TÜİK publishes. Run it by hand any time from the Actions tab.
+name: Update TÜİK inflation
+
+on:
+  schedule:
+    - cron: '0 9 4 * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Read EVDS and update params.json
+        env:
+          EVDS_API_KEY: ${{ secrets.EVDS_API_KEY }}
+        run: python3 update_tuik.py params.json
+
+      - name: Commit if anything changed
+        run: |
+          if git diff --quiet params.json; then
+            echo "No change."
+            exit 0
+          fi
+          git config user.name 'github-actions[bot]'
+          git config user.email 'github-actions[bot]@users.noreply.github.com'
+          git commit -am "TÜİK inflation update"
+          git push

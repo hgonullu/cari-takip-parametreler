@@ -1,0 +1,82 @@
+{
+  "_readme": "Cari Takip Gold — published tax and inflation figures. The app reads this file about once a month. See README.md before editing.",
+  "years": [
+    {
+      "year": 2025,
+      "rent_exemption": 47000,
+      "lump_sum_percent": 15.0,
+      "brackets": [
+        {
+          "upTo": 158000,
+          "rate": 15
+        },
+        {
+          "upTo": 330000,
+          "rate": 20
+        },
+        {
+          "upTo": 800000,
+          "rate": 27
+        },
+        {
+          "upTo": 4300000,
+          "rate": 35
+        },
+        {
+          "rate": 40
+        }
+      ],
+      "deed_percent": 2.0,
+      "agent_percent": 2.0,
+      "expenses_percent_of_rent": 8.0,
+      "deposit_withholding_percent": 17.5,
+      "kkdf_percent": 15.0,
+      "bsmv_percent": 15.0,
+      "source": "GİB"
+    },
+    {
+      "year": 2026,
+      "rent_exemption": 58000,
+      "lump_sum_percent": 15.0,
+      "brackets": [
+        {
+          "upTo": 190000,
+          "rate": 15
+        },
+        {
+          "upTo": 400000,
+          "rate": 20
+        },
+        {
+          "upTo": 1000000,
+          "rate": 27
+        },
+        {
+          "upTo": 5300000,
+          "rate": 35
+        },
+        {
+          "rate": 40
+        }
+      ],
+      "deed_percent": 2.0,
+      "agent_percent": 2.0,
+      "expenses_percent_of_rent": 8.0,
+      "deposit_withholding_percent": 17.5,
+      "kkdf_percent": 15.0,
+      "bsmv_percent": 15.0,
+      "source": "GİB"
+    }
+  ],
+  "inflation": {
+    "tuik": {
+      "annual_percent": 31.51,
+      "rent_cap_percent": 31.79,
+      "period": "2026-08"
+    },
+    "enag": {
+      "annual_percent": 49.03,
+      "period": "2026-08"
+    }
+  }
+}
