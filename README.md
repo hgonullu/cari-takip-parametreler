@@ -32,38 +32,45 @@ API adresi kullanılıyor.)
 
 ## Her ay ne yapmak gerekiyor
 
-**TÜİK: hiçbir şey.** `update-tuik.yml` işi her ayın 4'ünde çalışıp TCMB'nin
-EVDS servisinden rakamı okuyor ve dosyaya yazıyor. Bir kerelik kurulum:
+Ayda bir, iki sayı. Toplam iki dakika.
 
-1. [evds2.tcmb.gov.tr](https://evds2.tcmb.gov.tr) adresinden ücretsiz hesap
-   açıp API anahtarını alın (profil sayfasında "API Anahtarı").
-2. Bu deponun **Settings → Secrets and variables → Actions → New repository
-   secret** bölümüne `EVDS_API_KEY` adıyla yazın.
-3. **Actions** sekmesinden işi bir kez elle çalıştırıp (Run workflow) sonucu
-   görün.
-
-İş, rakam bir önceki aya göre değişmediyse dosyaya dokunmuyor; rakam gerçek
-olamayacak kadar büyük çıkarsa dosyayı değiştirmeden hata veriyor. Yani bozuk
-bir rakamın uygulamaya ulaşma yolu yok.
-
-**ENAG: ayda bir, tek sayı.** ENAG rakamını makineyle almak güvenli değil —
-siteleri doğrudan erişimi engelliyor, X hesabı giriş istiyor, haber siteleri de
-bazen yıllık enflasyon yerine çekirdek enflasyonu yazıyor. Bu yüzden elle:
-
-1. [x.com/ENAGRUP](https://x.com/ENAGRUP) hesabından ayın rakamına bakın
-   (**yıllık** E-TÜFE, aylık olan değil).
-2. `params.json` içindeki `inflation.enag` bölümünü güncelleyin:
+1. **TÜİK:** [TÜİK enflasyon haberi](https://data.tuik.gov.tr) ya da herhangi bir
+   haber kaynağından ayın rakamlarına bakın. İki rakam lazım:
+   - **yıllık enflasyon** (manşet rakam) → `annual_percent`
+   - **12 aylık ortalama** (kira artış tavanı olarak duyurulur) → `rent_cap_percent`
+2. **ENAG:** [x.com/ENAGRUP](https://x.com/ENAGRUP) hesabından **yıllık** E-TÜFE
+   rakamını alın (aylık olanı değil) → `annual_percent`
+3. `params.json` dosyasını GitHub'da kalem simgesiyle açıp `inflation` bölümünü
+   güncelleyin, `period` alanlarına ayı yazın:
 
 ```json
-"enag": { "annual_percent": 49.03, "period": "2026-08" }
+"inflation": {
+  "tuik": { "annual_percent": 31.51, "rent_cap_percent": 31.79, "period": "2026-08" },
+  "enag": { "annual_percent": 49.03, "period": "2026-08" }
+}
 ```
 
-3. Değişikliği kaydedin (GitHub'ın kalem simgesiyle doğrudan tarayıcıdan
-   düzenleyebilirsiniz). Birkaç dakika içinde yayına girer.
+4. Kaydedin. Birkaç dakika içinde yayına girer; telefonlardaki uygulama en geç
+   bir ay içinde (ya da kullanıcı Ayarlar'dan isterse hemen) alır.
+
+Bir ay atlanırsa bir şey bozulmaz: uygulamada eski tarih görünür, kullanıcı
+verinin ne kadar güncel olduğunu zaten ekranda görür.
 
 **Vergi değerleri: yılda bir, Ocak ayında.** Yeni yılın rakamları Resmî
 Gazete'de yayımlanınca `years` dizisine yeni bir yıl ekleyin. Eski yılları
 silmeyin: geçmiş tarihli bir hesap onları kullanıyor.
+
+### Otomatik güncelleme neden yok
+
+`update_tuik.py` ve `.github/workflows/update-tuik.yml` dosyaları TÜİK
+rakamını TCMB'nin EVDS servisinden otomatik yazmak için hazırlandı, ama EVDS
+GitHub'ın sunucularından gelen her isteği — anahtar başlıkta da adreste de
+gönderilse — veri yerine kendi web sayfasıyla cevapladı. Anahtarın reddedilmesi
+mi, yurt dışı erişimin engellenmesi mi olduğu dışarıdan ayırt edilemiyor.
+
+Dosyalar duruyor ve elle çalıştırılabilir (Actions → Run workflow). Aylık
+zamanlama bilerek kaldırıldı: her ay hata veren bir iş, kimsenin bakmadığı bir
+iş hâline gelir.
 
 ## Bir şeyi bozarsam ne olur
 

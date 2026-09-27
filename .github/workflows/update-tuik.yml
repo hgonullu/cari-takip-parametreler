@@ -1,10 +1,13 @@
-# Writes TÜİK's inflation into params.json on the 4th of every month, the day
-# after TÜİK publishes. Run it by hand any time from the Actions tab.
+# Writes TÜİK's inflation into params.json from TCMB's EVDS service.
+#
+# Dormant: EVDS answered every request from GitHub's runners with its own web
+# page rather than data, whether the key travelled in the header or in the
+# query, so the figures are written by hand instead (see README). The monthly
+# schedule is deliberately removed — a job that fails every month teaches
+# everyone to ignore it. Run it from the Actions tab if EVDS ever cooperates.
 name: Update TÜİK inflation
 
 on:
-  schedule:
-    - cron: '0 9 4 * *'
   workflow_dispatch:
 
 permissions:
