@@ -23,6 +23,7 @@ from __future__ import annotations
 import json
 import os
 import sys
+import urllib.error
 import urllib.request
 from datetime import date
 
@@ -42,19 +43,43 @@ def fetch_index(key: str, months: int = 30) -> list[tuple[str, float]]:
         end=today.strftime("%d-%m-%Y"),
     )
     request = urllib.request.Request(url, headers={"key": key, "User-Agent": "cari-takip-parametreler"})
-    with urllib.request.urlopen(request, timeout=30) as response:
-        payload = json.load(response)
+    try:
+        with urllib.request.urlopen(request, timeout=30) as response:
+            body = response.read().decode("utf-8", "replace")
+    except urllib.error.HTTPError as error:
+        # The key never appears here: the URL carries no key, it is a header.
+        raise SystemExit(f"EVDS refused the request: HTTP {error.code}. Check that EVDS_API_KEY is the API key from your EVDS profile.")
+    except urllib.error.URLError as error:
+        raise SystemExit(f"Could not reach EVDS: {error.reason}")
+
+    try:
+        payload = json.loads(body)
+    except json.JSONDecodeError:
+        raise SystemExit(f"EVDS did not answer with JSON. First 200 characters: {body[:200]!r}")
+
+    items = payload.get("items")
+    if not items:
+        raise SystemExit(f"EVDS returned no data. Keys in the response: {sorted(payload)}")
 
     field = SERIES.replace(".", "_")
+    if field not in items[0]:
+        raise SystemExit(f"EVDS has no {field} column. Columns: {sorted(items[0])}")
+
     out: list[tuple[str, float]] = []
-    for row in payload.get("items", []):
+    for row in items:
         raw = row.get(field)
         if raw in (None, "", "null"):
             continue
-        # EVDS dates come as "MM-YYYY" for monthly series.
-        month, year = row["Tarih"].split("-")
-        out.append((f"{year}-{month}", float(str(raw).replace(",", "."))))
+        out.append((normalise_month(row["Tarih"]), float(str(raw).replace(",", "."))))
+    out.sort()
     return out[-months:]
+
+
+def normalise_month(tarih: str) -> str:
+    """EVDS writes a month as "YYYY-M" or "MM-YYYY" depending on the era."""
+    a, b = tarih.split("-")
+    year, month = (a, b) if len(a) == 4 else (b, a)
+    return f"{year}-{int(month):02d}"
 
 
 def readings(index: list[tuple[str, float]]) -> dict[str, object]:
