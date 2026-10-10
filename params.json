@@ -70,13 +70,13 @@
   ],
   "inflation": {
     "tuik": {
-      "annual_percent": 31.51,
-      "rent_cap_percent": 31.79,
-      "period": "2026-08"
+      "annual_percent": 29.73,
+      "rent_cap_percent": 31.49,
+      "period": "2026-09"
     },
     "enag": {
-      "annual_percent": 49.03,
-      "period": "2026-08"
+      "annual_percent": 46.61,
+      "period": "2026-09"
     }
   }
 }
