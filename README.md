@@ -29,6 +29,15 @@ API adresi kullanılıyor.)
   bağlı.
 - `period` — rakamın ait olduğu ay (`YYYY-MM`). Uygulama bunu ekranda
   gösteriyor, kullanıcı verinin ne kadar güncel olduğunu görüyor.
+- `inflation.tuik.monthly` ve `inflation.enag.monthly` — **aylık** değişim
+  serisi: `"2026-09": 1.84` gibi, ay → o ayın bir önceki aya göre yüzde
+  değişimi. Uygulama bununla iki tarih arasındaki enflasyonu hesaplar
+  (varlık detayındaki "Enflasyona göre" kartı). TÜİK serisi 2005-01'den,
+  ENAG serisi 2022-01'den başlar. Endeks düzeyi değil değişim tutulur; TÜİK
+  2026'da bazı 2025=100 yaptı, düzeyler zincirlenemez ama değişimler
+  zincirlenir. ENAG serisi basın aktarımlarından derlenip ENAG'ın yıl sonu
+  yıllık oranlarına sabitlenmiştir (ayrıntı uygulamadaki
+  `inflationSeries.ts` açıklamasında).
 
 ## Her ay ne yapmak gerekiyor
 
@@ -40,17 +49,21 @@ Ayda bir, iki sayı. Toplam iki dakika.
    - **12 aylık ortalama** (kira artış tavanı olarak duyurulur) → `rent_cap_percent`
 2. **ENAG:** [x.com/ENAGRUP](https://x.com/ENAGRUP) hesabından **yıllık** E-TÜFE
    rakamını alın (aylık olanı değil) → `annual_percent`
-3. `params.json` dosyasını GitHub'da kalem simgesiyle açıp `inflation` bölümünü
+3. **Aylık değişim:** aynı haberlerden ayın **aylık** oranlarını da alın (TÜİK
+   "bir önceki aya göre", ENAG "aylık bazda") ve her iki `monthly` sözlüğünün
+   sonuna `"YYYY-MM": değer` satırı ekleyin. Ay atlanırsa uygulama o ayı
+   kapsayan kıyasları "hesaplanamıyor" diye gösterir, yanlış hesaplamaz.
+4. `params.json` dosyasını GitHub'da kalem simgesiyle açıp `inflation` bölümünü
    güncelleyin, `period` alanlarına ayı yazın:
 
 ```json
 "inflation": {
-  "tuik": { "annual_percent": 31.51, "rent_cap_percent": 31.79, "period": "2026-08" },
-  "enag": { "annual_percent": 49.03, "period": "2026-08" }
+  "tuik": { "annual_percent": 29.73, "rent_cap_percent": 31.49, "period": "2026-09", "monthly": { "...": 0, "2026-09": 1.84 } },
+  "enag": { "annual_percent": 46.61, "period": "2026-09", "monthly": { "...": 0, "2026-09": 2.10 } }
 }
 ```
 
-4. Kaydedin. Birkaç dakika içinde yayına girer; telefonlardaki uygulama en geç
+5. Kaydedin. Birkaç dakika içinde yayına girer; telefonlardaki uygulama en geç
    bir ay içinde (ya da kullanıcı Ayarlar'dan isterse hemen) alır.
 
 Bir ay atlanırsa bir şey bozulmaz: uygulamada eski tarih görünür, kullanıcı
