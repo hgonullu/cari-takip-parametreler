@@ -38,6 +38,14 @@ API adresi kullanılıyor.)
   zincirlenir. ENAG serisi basın aktarımlarından derlenip ENAG'ın yıl sonu
   yıllık oranlarına sabitlenmiştir (ayrıntı uygulamadaki
   `inflationSeries.ts` açıklamasında).
+- `minimum_wage` — (isteğe bağlı) uygulamaya gömülü asgari ücret serisinden
+  **sonraki** dönemler: `[["2027-01-01", brüt, net], ...]`, aylık, bugünkü TL.
+  Net, bekar ve çocuksuz işçinin eline geçen tutardır. Uygulama yalnızca kendi
+  serisinin son tarihinden (şu an 2026-01-01) sonraki satırları alır; net
+  brütten büyükse ya da brüt bir önceki dönemden düşükse satırı yok sayar.
+  Yeni yılın asgari ücreti aralıkta Resmî Gazete'de çıkınca buraya bir satır
+  eklenir; yıl içinde ikinci artış olursa temmuz satırı da eklenir. Böylece
+  derleme beklemeden bütün uygulamalara ulaşır.
 
 ## Her ay ne yapmak gerekiyor
 
