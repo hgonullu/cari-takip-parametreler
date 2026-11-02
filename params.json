@@ -27,7 +27,7 @@
         }
       ],
       "deed_percent": 2.0,
-      "agent_percent": 2.0,
+      "agent_percent": 2.4,
       "expenses_percent_of_rent": 8.0,
       "deposit_withholding_percent": 17.5,
       "kkdf_percent": 15.0,
@@ -60,7 +60,7 @@
         }
       ],
       "deed_percent": 2.0,
-      "agent_percent": 2.0,
+      "agent_percent": 2.4,
       "expenses_percent_of_rent": 8.0,
       "deposit_withholding_percent": 17.5,
       "kkdf_percent": 15.0,
